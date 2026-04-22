@@ -41,8 +41,9 @@ export async function GET(req: Request) {
         const message = `Hi ${inv.client}, ₹${inv.amount} was due on ${inv.dueDate}. Please pay.`;
 
         console.log("SEND TO:", inv.phone);
-        console.log("MESSAGE:", message);
+        console.log("MESSAGE:", message);   
     });
 
     return NextResponse.json({ success: true, count: reminders.length });
 }
+
