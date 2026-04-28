@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "PayNudge",
+  title: "PayNudge - Get Paid On Time",
   description: "Send automated WhatsApp reminders to clients and get paid faster.",
 };
 
