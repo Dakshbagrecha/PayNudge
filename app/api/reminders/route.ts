@@ -20,8 +20,8 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db("PayNudge");
 
-    const invoices = await db.collection("Invoices").find({
-        status: "Pending"
+    const invoices = await db.collection("invoices").find({
+        status: "pending"
     }).toArray();
 
     const today = new Date();
