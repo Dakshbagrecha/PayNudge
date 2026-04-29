@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "git add . && git commit -m \"quick fix\" && git push origin main"
   },
   "dependencies": {
     "lucide-react": "^1.8.0",

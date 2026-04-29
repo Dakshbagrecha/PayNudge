@@ -400,7 +400,7 @@ type Invoice = {
     phone: string;
     amount: number;
     dueDate: string;
-    status: "Paid" | "Pending";
+    status: "paid" | "pending";
 };
 
 export default function Dashboard() {
@@ -419,10 +419,10 @@ export default function Dashboard() {
 
     // STATS
     const totalInvoices = invoices.length;
-    const pending = invoices.filter(i => i.status === "Pending").length;
+    const pending = invoices.filter(i => i.status === "pending").length;
     const collected = invoices
-        .filter(i => i.status === "Paid")
-        .reduce((sum, i) => sum + i.amount, 0);
+    .filter(i => i.status === "paid")
+    .reduce((sum, i) => sum + i.amount, 0);
 
     function getReminderStatus(dueDate: string) {
         const today = new Date();
@@ -491,13 +491,13 @@ export default function Dashboard() {
                                             headers: { "Content-Type": "application/json" },
                                             body: JSON.stringify({
                                                 id: confirm.invoice._id,
-                                                status: "Paid"
+                                                status: "paid"
                                             })
                                         });
 
                                         setInvoices(prev =>
                                             prev.map(i =>
-                                                i._id === confirm.invoice!._id ? { ...i, status: "Paid" } : i
+                                                i._id === confirm.invoice!._id ? { ...i, status: "paid" } : i
                                             )
                                         );
                                         setSuccess("Marked as paid");
@@ -610,7 +610,7 @@ export default function Dashboard() {
                                                 <td className="px-6 py-4">{inv.dueDate}</td>
 
                                                 <td className="px-6 py-4">
-                                                    <span className={`text-sm font-medium ${inv.status === "Paid"
+                                                    <span className={`text-sm font-medium ${inv.status === "paid"
                                                         ? "text-green-600"
                                                         : reminder === "Overdue"
                                                             ? "text-red-600"
@@ -618,7 +618,7 @@ export default function Dashboard() {
                                                                 ? "text-orange-600"
                                                                 : "text-yellow-600"
                                                         }`}>
-                                                        {inv.status === "Paid" ? "Paid" : reminder}
+                                                        {inv.status === "paid" ? "Paid" : reminder}
                                                     </span>
                                                 </td>
 
@@ -637,7 +637,7 @@ export default function Dashboard() {
                                                             setTimeout(() => setSuccess(""), 2000);
                                                         }}
                                                         className="bg-green-600 text-white px-3 py-1 rounded-lg text-xs"
-                                                        disabled={inv.status === "Paid"}
+                                                        disabled={inv.status === "paid"}
                                                     >
                                                         Send
                                                     </button>
@@ -691,7 +691,7 @@ export default function Dashboard() {
                                     <div key={inv._id} className="p-4">
                                         <div className="flex justify-between items-center">
                                             <p className="font-medium text-[#111827]">{inv.client}</p>
-                                            <span className={`text-sm font-medium ${inv.status === "Paid"
+                                            <span className={`text-sm font-medium ${inv.status === "paid"
                                                 ? "text-green-600"
                                                 : reminder === "Overdue"
                                                     ? "text-red-600"
@@ -699,7 +699,7 @@ export default function Dashboard() {
                                                         ? "text-orange-600"
                                                         : "text-yellow-600"
                                                 }`}>
-                                                {inv.status === "Paid" ? "Paid" : reminder}
+                                                {inv.status === "paid" ? "Paid" : reminder}
                                             </span>
                                         </div>
 
@@ -722,7 +722,7 @@ export default function Dashboard() {
                                                     setTimeout(() => setSuccess(""), 2000);
                                                 }}
                                                 className="flex-1 h-9 bg-green-600 text-white rounded-lg text-xs flex items-center justify-center"
-                                                disabled={inv.status === "Paid"}
+                                                disabled={inv.status === "paid"}
                                             >
                                                 Send
                                             </button>

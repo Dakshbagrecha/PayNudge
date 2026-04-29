@@ -6,7 +6,7 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db("PayNudge");
 
-    const invoices = await db.collection("Invoices").find().toArray();
+    const invoices = await db.collection("invoices").find().toArray();
 
     return NextResponse.json(invoices);
 }
@@ -19,11 +19,18 @@ export async function POST(req: Request) {
 
     const newInvoice = {
         ...body,
-        status: "Pending",
+        status: "pending",
+        dueDate: new Date(body.dueDate),
+
+        reminderEnabled: true,
+        reminderStage: 0,
+        reminderCount: 0,
+        lastReminderSent: null,
+
         createdAt: new Date(),
     };
 
-    await db.collection("Invoices").insertOne(newInvoice);
+    await db.collection("invoices").insertOne(newInvoice);
 
     return NextResponse.json(newInvoice);
 }
@@ -31,18 +38,21 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     const { id, status } = await req.json();
 
-    console.log("PUT REQUEST ID:", id);
-    console.log("PUT STATUS:", status);
-
     const client = await clientPromise;
     const db = client.db("PayNudge");
 
-    const result = await db.collection("Invoices").updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { status } }
-    );
+    let updateData: any = {
+        status: status.toLowerCase()
+    };
 
-    console.log("PUT RESULT:", result);
+    if (status.toLowerCase() === "paid") {
+        updateData.reminderEnabled = false;
+    }
+
+    const result = await db.collection("invoices").updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updateData }
+    );
 
     if (result.matchedCount === 0) {
         return Response.json({ success: false, error: "Invoice not found" });
@@ -59,7 +69,7 @@ export async function DELETE(req: Request) {
     const client = await clientPromise;
     const db = client.db("PayNudge");
 
-    const result = await db.collection("Invoices").deleteOne({
+    const result = await db.collection("invoices").deleteOne({
         _id: new ObjectId(id)
     });
 
