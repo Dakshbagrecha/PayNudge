@@ -414,7 +414,10 @@ export default function Dashboard() {
     useEffect(() => {
         fetch("/api/invoices")
             .then(res => res.json())
-            .then(data => setInvoices(data));
+            .   then(data => {
+                console.log("FRONTEND DATA:", data);
+                setInvoices(data);
+            });
     }, []);
 
     // STATS

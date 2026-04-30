@@ -7,7 +7,7 @@ export async function GET() {
     const db = client.db("PayNudge");
 
     const invoices = await db.collection("invoices").find().toArray();
-
+    console.log("FETCHED DATA:", invoices);
     return NextResponse.json(invoices);
 }
 
@@ -38,6 +38,9 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     const { id, status } = await req.json();
 
+    console.log("ID RECEIVED:", id);
+    console.log("STATUS RECEIVED:", status);
+
     const client = await clientPromise;
     const db = client.db("PayNudge");
 
@@ -53,6 +56,8 @@ export async function PUT(req: Request) {
         { _id: new ObjectId(id) },
         { $set: updateData }
     );
+
+    console.log("UPDATE RESULT:", result);
 
     if (result.matchedCount === 0) {
         return Response.json({ success: false, error: "Invoice not found" });
