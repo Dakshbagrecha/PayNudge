@@ -1,55 +1,11 @@
-// import { NextResponse } from "next/server";
-// import clientPromise from "@/lib/mongodb";
-
-// export async function GET(req: Request) {
-//     const auth = req.headers.get("authorization");
-//     const url = new URL(req.url);
-//     const querySecret = url.searchParams.get("secret");
-
-//     console.log("AUTH HEADER:", auth);
-//     console.log("QUERY SECRET:", querySecret);
-//     console.log("ENV SECRET:", process.env.CRON_SECRET);
-
-//     if (
-//         auth !== `Bearer ${process.env.CRON_SECRET}` &&
-//         querySecret !== process.env.CRON_SECRET
-//     ) {
-//         return new Response("Unauthorized", { status: 401 });
-//     }
-
-//     const client = await clientPromise;
-//     const db = client.db("PayNudge");
-
-//     const invoices = await db.collection("invoices").find({
-//         status: "pending"
-//     }).toArray();
-
-//     const today = new Date();
-//     today.setHours(0, 0, 0, 0);
-
-//     const reminders = invoices.filter(inv => {
-//         const due = new Date(inv.dueDate);
-//         due.setHours(0, 0, 0, 0);
-
-//         return due <= today; // overdue OR today
-//     });
-
-//     console.log("REMINDERS TO SEND:", reminders.length);
-
-//     // For now just simulate sending
-//     reminders.forEach(inv => {
-//         const message = `Hi ${inv.client}, ₹${inv.amount} was due on ${inv.dueDate}. Please pay.`;
-
-//         console.log("SEND TO:", inv.phone);
-//         console.log("MESSAGE:", message);   
-//     });
-
-//     return NextResponse.json({ success: true, count: reminders.length });
-// }
-
-
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import twilio from "twilio";
+
+const twilioClient = twilio(
+    process.env.TWILIO_ACCOUNT_SID!,
+    process.env.TWILIO_AUTH_TOKEN!
+);
 
 export async function GET(req: Request) {
     // 🔐 AUTH CHECK
@@ -143,8 +99,16 @@ export async function GET(req: Request) {
 
         // 🚀 SEND + UPDATE
         if (shouldSend) {
-            console.log("SEND TO:", inv.phone);
-            console.log("MESSAGE:", message);
+
+            if (!process.env.TWILIO_PHONE) {
+                throw new Error("TWILIO_PHONE not set");
+            }
+
+            await twilioClient.messages.create({
+                body: message,
+                from: process.env.TWILIO_PHONE,
+                to: `+91${inv.phone}`
+            });
 
             await db.collection("invoices").updateOne(
                 { _id: inv._id },
